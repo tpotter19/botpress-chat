@@ -6,24 +6,17 @@
 </head>
 <body>
   <script>
-    // Clear bot history on every load
     localStorage.removeItem('bp/messaging/session');
     localStorage.clear();
   </script>
   <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js?v=2"></script>
   <script src="https://files.bpcontent.cloud/2026/04/08/14/20260408140732-OE8X8DYX.js?v=2"></script>
   <script>
-    // Fetch the SharePoint user directly from the iframe
-    // This works because the browser sends the user's SharePoint cookies automatically
-    fetch('https://yainipd.sharepoint.com/_api/web/currentuser', {
-      credentials: 'include',
-      headers: { 'Accept': 'application/json;odata=verbose' }
-    })
-    .then(res => res.json())
-    .then(data => {
-      const name = data.d.Title;
-      const email = data.d.Email;
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name');
+    const email = params.get('email');
 
+    if (name || email) {
       window.botpress.on('webchat:initialized', () => {
         window.botpress.updateUser({
           data: {
@@ -32,8 +25,7 @@
           }
         });
       });
-    })
-    .catch(err => console.error('Could not fetch SharePoint user:', err));
+    }
   </script>
 </body>
 </html>
