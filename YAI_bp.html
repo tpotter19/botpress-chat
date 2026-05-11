@@ -15,22 +15,23 @@
   <script>
     // Listen for user identity from SharePoint parent page
     window.addEventListener('message', (event) => {
-      // Optional but recommended: restrict to your SharePoint domain
-      // if (event.origin !== 'https://yourcompany.sharepoint.com') return;
-
       if (event.data?.type === 'BP_USER') {
         const { name, email } = event.data.user;
 
         window.botpress.on('webchat:initialized', () => {
           window.botpress.updateUser({
             data: {
-              firstName: name.split(' ')[0],
-              lastName: name.split(' ').slice(1).join(' '),
+              firstName: name,
               email: email
             }
           });
         });
       }
+    });
+
+    // Tell the parent page we're ready to receive user data
+    window.addEventListener('load', () => {
+      window.parent.postMessage({ type: 'BP_READY' }, '*');
     });
   </script>
 </body>
