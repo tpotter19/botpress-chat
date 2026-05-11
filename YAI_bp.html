@@ -13,26 +13,27 @@
   <script src="https://cdn.botpress.cloud/webchat/v3.6/inject.js?v=2"></script>
   <script src="https://files.bpcontent.cloud/2026/04/08/14/20260408140732-OE8X8DYX.js?v=2"></script>
   <script>
-    // Listen for user identity from SharePoint parent page
-    window.addEventListener('message', (event) => {
-      if (event.data?.type === 'BP_USER') {
-        const { name, email } = event.data.user;
+    // Fetch the SharePoint user directly from the iframe
+    // This works because the browser sends the user's SharePoint cookies automatically
+    fetch('https://YOURCOMPANY.sharepoint.com/_api/web/currentuser', {
+      credentials: 'include',
+      headers: { 'Accept': 'application/json;odata=verbose' }
+    })
+    .then(res => res.json())
+    .then(data => {
+      const name = data.d.Title;
+      const email = data.d.Email;
 
-        window.botpress.on('webchat:initialized', () => {
-          window.botpress.updateUser({
-            data: {
-              firstName: name,
-              email: email
-            }
-          });
+      window.botpress.on('webchat:initialized', () => {
+        window.botpress.updateUser({
+          data: {
+            firstName: name,
+            email: email
+          }
         });
-      }
-    });
-
-    // Tell the parent page we're ready to receive user data
-    window.addEventListener('load', () => {
-      window.parent.postMessage({ type: 'BP_READY' }, '*');
-    });
+      });
+    })
+    .catch(err => console.error('Could not fetch SharePoint user:', err));
   </script>
 </body>
 </html>
