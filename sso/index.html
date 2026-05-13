@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js"></script>
+</head>
+<body>
+  <p style="font-family:sans-serif;padding:20px">Signing you in...</p>
+  <script>
+    const msalConfig = {
+      auth: {
+        clientId: "7533e1ab-fd8e-4fb3-9ebf-5e26e0d82643",
+        authority: "https://login.microsoftonline.com/53572833-cd7d-491f-9594-a0f333691496",
+        redirectUri: "https://wonderful-coast-09300d70f7.azurestaticapps.net/auth.html"
+      }
+    };
+    const msalInstance = new msal.PublicClientApplication(msalConfig);
+    async function init() {
+      await msalInstance.initialize();
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length === 0) {
+        msalInstance.loginRedirect({ scopes: ["User.Read"] });
+      } else {
+        const account = accounts[0];
+        const name = encodeURIComponent(account.name);
+        const email = encodeURIComponent(account.username);
+        window.location.href = `https://tpotter19.github.io/botpress-chat/YAI_bp.html?name=${name}&email=${email}`;
+      }
+    }
+    init();
+  </script>
+</body>
+</html>
